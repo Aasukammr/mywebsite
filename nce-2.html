@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新概念英语第二册 | NewConceptEnglish.com</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="site-header">
+    <h1>新概念英语 <span class="slogan">NewConceptEnglish.com</span></h1>
+  </header>
+
+  <nav class="nav-bar">
+    <a href="index.html" class="nav-link nav-home">HOME</a>
+    <a href="#" class="nav-link nav-1">1</a>
+    <a href="nce-2.html" class="nav-link nav-2 active">2</a>
+    <a href="#" class="nav-link nav-3">3</a>
+    <a href="#" class="nav-link nav-4">4</a>
+    <a href="#" class="nav-link nav-search">S</a>
+    <a href="#" class="nav-link nav-words">W</a>
+  </nav>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>第二册目录</h2>
+        <select id="lessonSelect" class="lesson-select"></select>
+        <input type="text" id="lessonFilter" class="filter-input" placeholder="搜索课文...">
+      </div>
+      <div class="lesson-list" id="lessonList"></div>
+    </aside>
+
+    <main class="content" id="lessonContent">
+      <div class="loading">加载中...</div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>新概念英语 | NewConceptEnglish.com</p>
+    <p>&copy; 2025-2026</p>
+  </footer>
+
+  <script src="data/nce2.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
