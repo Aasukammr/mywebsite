@@ -2,21 +2,27 @@
   'use strict';
 
   function init() {
-    const data = window.__NCE2;
+    const book = String(window.NCE_BOOK || 2);
+    const data = window['__NCE' + book];
     if (!data || data.length === 0) {
       showEmpty();
       return;
     }
 
+    const prefix = book + '-';
     const list = document.getElementById('lessonList');
     const select = document.getElementById('lessonSelect');
     const filter = document.getElementById('lessonFilter');
     const content = document.getElementById('lessonContent');
 
+    function lessonNum(id) {
+      return id.replace(prefix, '').replace(/^0+/, '');
+    }
+
     function renderLessonList(items) {
       list.innerHTML = items.map(function (l) {
         return '<a href="#' + l.id + '" class="lesson-link" data-id="' + l.id + '">' +
-          '<span class="lesson-num">' + l.id.replace('2-', '') + '</span>' +
+          '<span class="lesson-num">' + lessonNum(l.id) + '</span>' +
           '<div class="lesson-title-group">' +
           '<span class="lesson-title-en">' + l.title + '</span>' +
           '<span class="lesson-title-cn">' + l.titleCn + '</span>' +
@@ -27,7 +33,7 @@
     function renderSelect(items) {
       select.innerHTML = items.map(function (l) {
         return '<option value="' + l.id + '">' +
-          l.id.replace('2-', '') + ' ' + l.title + ' — ' + l.titleCn +
+          lessonNum(l.id) + ' ' + l.title + ' — ' + l.titleCn +
           '</option>';
       }).join('');
     }
@@ -50,7 +56,7 @@
       select.value = id;
       history.replaceState(null, '', '#' + id);
 
-      var num = lesson.id.replace('2-', '');
+      var num = lessonNum(lesson.id);
       content.innerHTML = '\
         <article class="lesson-article">\
           <div class="lesson-header">\

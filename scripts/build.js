@@ -1,34 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 
-const lessonsDir = path.join(__dirname, '..', 'lessons');
-const outputFile = path.join(__dirname, '..', 'data', 'nce2.js');
+const root = path.join(__dirname, '..');
+const lessonsDir = path.join(root, 'lessons');
+const dataDir = path.join(root, 'data');
 
 if (!fs.existsSync(lessonsDir)) {
   console.log('Creating lessons/ directory...');
   fs.mkdirSync(lessonsDir, { recursive: true });
 }
 
-const files = fs.readdirSync(lessonsDir)
-  .filter(f => f.endsWith('.md'))
-  .sort();
-
-if (files.length === 0) {
-  console.log('No .md files found in lessons/');
-  fs.writeFileSync(outputFile, 'window.__NCE2 = [];', 'utf-8');
-  console.log('Created empty data/nce2.js');
-  process.exit(0);
-}
-
-const lessons = [];
-
-for (const file of files) {
-  const raw = fs.readFileSync(path.join(lessonsDir, file), 'utf-8');
+function parseLesson(file) {
+  const raw = fs.readFileSync(path.join(lessonsDir, file), 'utf-8').replace(/\r\n/g, '\n');
 
   const frontMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!frontMatch) {
     console.log(`  Skip ${file}: missing front matter`);
-    continue;
+    return null;
   }
 
   const meta = {};
@@ -73,18 +61,41 @@ for (const file of files) {
     }
   }
 
-  lessons.push({
+  return {
     id: path.basename(file, '.md'),
     title: meta.title || '',
     titleCn: meta.titleCn || '',
     english,
     chinese,
     words
-  });
-
-  console.log(`  ${file} → ${meta.title || file}`);
+  };
 }
 
-const output = `window.__NCE2 = ${JSON.stringify(lessons, null, 2)};`;
-fs.writeFileSync(outputFile, output, 'utf-8');
-console.log(`\nDone! ${lessons.length} lessons → data/nce2.js`);
+const books = ['1', '2', '3', '4'];
+let built = 0;
+
+for (const book of books) {
+  const prefix = book + '-';
+  const files = fs.readdirSync(lessonsDir)
+    .filter(f => f.endsWith('.md') && f.startsWith(prefix))
+    .sort();
+
+  if (files.length === 0) {
+    continue;
+  }
+
+  const lessons = [];
+  for (const file of files) {
+    const lesson = parseLesson(file);
+    if (lesson) lessons.push(lesson);
+  }
+
+  const output = `window.__NCE${book} = ${JSON.stringify(lessons, null, 2)};`;
+  fs.writeFileSync(path.join(dataDir, `nce${book}.js`), output, 'utf-8');
+  console.log(`Book ${book}: ${lessons.length} lessons → data/nce${book}.js`);
+  built++;
+}
+
+if (built === 0) {
+  console.log('No .md files found in lessons/');
+}
